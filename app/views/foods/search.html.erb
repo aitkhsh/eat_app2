@@ -1,0 +1,8 @@
+<div>
+<h1>Let's go to the resraurant!</h1>
+  <% @results.each do |food| %>
+    <%= food.genre %>
+  <% end %><br>
+
+<%= link_to 'Choose your mood again.', foods_path %>
+</div>
