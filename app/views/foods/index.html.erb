@@ -1,8 +1,8 @@
 <p style="color: green"><%= notice %></p>
 
-<h1>What's your mood?</h1>
+<h1>What's your mood?</h1><br>
 <%= search_form_for @q, url: search_foods_path do |f| %>
-  <%= f.label :mood_cont, 'Mood' %>
+  <h2><%= f.label :mood_cont, 'Mood' %></h2><br>
   <%= f.collection_radio_buttons :mood_eq, [['Hot', 'Hot'], ['Punchy', 'Punchy'], ['Relaxing', 'Relaxing'], ['Holiday', 'Holiday'], ['Gorgeous', 'Gorgeous']], :last, :first %>
   <br>
   <%= f.submit 'Submit' %>
