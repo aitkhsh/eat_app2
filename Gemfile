@@ -14,6 +14,12 @@ gem "puma",            "5.6.8"
 gem "bootsnap",        "1.16.0", require: false
 gem "sqlite3",         "1.6.1"
 gem "ransack"
+gem "dotenv-rails"
+gem "geocoder"
+gem "google_places"
+gem "gmaps4rails"
+gem "google_maps_service"
+gem "jquery-rails"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
