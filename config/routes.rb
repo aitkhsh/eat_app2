@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root "application#hello"
+  root "foods#index"
   resources :foods do
     collection do
       get "search"
