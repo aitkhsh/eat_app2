@@ -61,8 +61,6 @@ class FoodsController < ApplicationController
   def search 
     @results = @q.result
     @api_key = ENV['GOOGLE_API_KEY']
-    @initial_location = { lat: 35.681236, lng: 139.767125 }  # 初期位置の設定
-    @markers = [{ lat: 35.681236, lng: 139.767125, title: 'Tokyo Station' }]  # マーカーの設定
   end
 
   private

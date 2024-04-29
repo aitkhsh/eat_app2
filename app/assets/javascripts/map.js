@@ -1,19 +1,13 @@
 // This example requires the Places library. Include the libraries=places
 // parameter when you first load the API. For example:
-// <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>&libraries=places">
-var map;
-var service;
-var infowindow;
-
-console.log(1 + 1)
-alert('Hello!!')
+// <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 function initMap() {
   // Create the map.
-  console.log(window.key);
   const pyrmont = { lat: -33.866, lng: 151.196 };
   const map = new google.maps.Map(document.getElementById("map"), {
     center: pyrmont,
     zoom: 17,
+    mapId: "8d193001f940fde3",
   });
   // Create the places service.
   const service = new google.maps.places.PlacesService(map);
@@ -41,7 +35,7 @@ function initMap() {
           pagination.nextPage();
         };
       }
-    },
+    }
   );
 }
 

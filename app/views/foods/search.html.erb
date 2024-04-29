@@ -10,35 +10,71 @@
     
 
     <link rel="stylesheet" type="text/css" href="/assets/style.css" />
-    <script type="module" src="/assets/index.js"></script>
+    <script type="module" src="assets/javascripts/map.js"></script>
+    
   </head>
   <body>
 
-    <div>
-    <h1>Let's go to the restaurant!</h1>
-      <% @results.each do |food| %>
-        <%= food.genre %>
-      <% end %><br>
+  <div>
+  <h1>Let's go to the restaurant!</h1>
+    <% @results.each do |food| %>
+      <%= food.genre %>
+    <% end %><br>
+
+    <script>
+    const results = <%= raw @results.to_json %>;
+
+    function initMap() {
+      const Amsterdam = { lat: 52.3676, lng: 4.9041 };
+      infowindow = new google.maps.InfoWindow();
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: Amsterdam,
+        zoom: 14,
+        mapId: "8d193001f940fde3",
+      });
+
+      const request = {
+        query: "results", // レストランを検索
+        fields: ["name", "geometry"],
+      };
+
+      service = new google.maps.places.PlacesService(map);
+      service.findPlaceFromQuery(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+            for (let i = 0; i < results.length; i++) {
+                createMarker(results[i]);
+            }
+
+            map.setCenter(results[0].geometry.location);
+          }
+      });
+    }
+
+    function createMarker(place) {
+        if (!place.geometry || !place.geometry.location) return;
+
+        const marker = new google.maps.Marker({
+          map,
+          position: place.geometry.location,
+        });
+
+        google.maps.event.addListener(marker, "click", () => {
+          infowindow.setContent(place.name || "");
+          infowindow.open(map);
+        });
+    }
+
+    window.initMap = initMap;
+    </script>
 
     <%= link_to 'Choose your mood again.', foods_path %>
     </div>
 
     <div id="map" style="height: 600px;"></div>
 
-<script>
-  // 地図を初期化する関数
-  function initMap() {
-    // 地図のオプション
-    const mapOptions = {
-      center: { lat: 35.6803997, lng: 139.7690174 }, // 地図の初期表示位置（東京）
-      zoom: 10 // ズームレベル
-    };
-
-    // 地図を指定した要素に表示
-    const map = new google.maps.Map(document.getElementById('map'), mapOptions);
-  }
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_API_KEY"] %>&callback=initMap"></script>
-    
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_API_KEY"] %>&callback=initMap"
+      defer
+    ></script>
   </body>
 </html>
