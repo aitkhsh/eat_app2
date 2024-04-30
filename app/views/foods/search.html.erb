@@ -17,27 +17,45 @@
 
   <div>
   <h1>Let's go to the restaurant!</h1>
+  <div id="result">
     <% @results.each do |food| %>
       <%= food.genre %>
-    <% end %><br>
+    <% end %>
+  </div><br>
 
-    <script>
-    const results = <%= raw @results.to_json %>;
+  <div id="map" style="height: 600px;"></div>
+
+  <script>
+    let map;
+    let infowindow;
+    let service;
 
     function initMap() {
-      const Amsterdam = { lat: 52.3676, lng: 4.9041 };
-      infowindow = new google.maps.InfoWindow();
+      const Amsterdam = new google.maps.LatLng(52.3676, 4.9041);
+      
       map = new google.maps.Map(document.getElementById("map"), {
         center: Amsterdam,
         zoom: 14,
         mapId: "8d193001f940fde3",
       });
 
+      const restaurantQuery = "restaurant";
+
+      const genres = [];
+      const genreElements = document.querySelectorAll("#result");
+      genreElements.forEach(element => {
+        genres.push(element.textContent.trim())
+      });
+
+      const allGenres = genres.join(", ");
+      const query = `restaurant, ${allGenres}`;
+
       const request = {
-        query: "results", // レストランを検索
+        query: query,
         fields: ["name", "geometry"],
       };
 
+      infowindow = new google.maps.InfoWindow();
       service = new google.maps.places.PlacesService(map);
       service.findPlaceFromQuery(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results) {
@@ -65,16 +83,15 @@
     }
 
     window.initMap = initMap;
-    </script>
+  </script>
 
     <%= link_to 'Choose your mood again.', foods_path %>
     </div>
 
-    <div id="map" style="height: 600px;"></div>
-
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_API_KEY"] %>&callback=initMap"
+      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_API_KEY"] %>&callback=initMap&libraries=places"
       defer
     ></script>
+    
   </body>
 </html>
