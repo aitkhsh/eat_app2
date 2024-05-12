@@ -47,8 +47,8 @@
         genres.push(element.textContent.trim())
       });
 
-      const allGenres = genres.join(", ");
-      const query = `restaurant, ${allGenres}`;
+      const allGenres = genres.join(" ");
+      const query = `restaurant ${allGenres} Amsterdam`;
 
       const request = {
         query: query,
@@ -57,7 +57,7 @@
 
       infowindow = new google.maps.InfoWindow();
       service = new google.maps.places.PlacesService(map);
-      service.findPlaceFromQuery(request, (results, status) => {
+      service.textSearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results) {
             for (let i = 0; i < results.length; i++) {
                 createMarker(results[i]);
