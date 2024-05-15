@@ -5,5 +5,6 @@ Rails.application.routes.draw do
       get "search"
     end
   end
-  get "/signup", to: "user#new"
+  get "/signup", to: "users#new"
+  resources :users
 end
