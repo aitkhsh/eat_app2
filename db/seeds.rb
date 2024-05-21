@@ -1,3 +1,4 @@
+# Search foods date
 foods = [
   { genre:'Cafe', mood:'Chill out' },
   { genre:'Korea', mood:'Hot' },
@@ -7,3 +8,21 @@ foods = [
   { genre:'French', mood:'Gorgeous' }
 ]
 Food.create(foods)
+
+# Create main an user
+User.create!(name:  "Example User",
+             email: "example@railstutorial.org",
+             password:              "foobar",
+             password_confirmation: "foobar",
+             admin: true)
+
+#Create addtional users
+99.times do |n|
+  name  = Faker::Name.name
+  email = "example-#{n+1}@railstutorial.org"
+  password = "password"
+  User.create!(name:  name,
+               email: email,
+               password:              password,
+               password_confirmation: password)
+end
