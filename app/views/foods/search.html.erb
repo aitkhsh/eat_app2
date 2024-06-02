@@ -18,7 +18,7 @@
   <div>
   <h1>Let's go to the restaurant!</h1>
   <div id="result">
-    <% @results.each do |food| %>
+    <% @food_results.each do |food| %>
       <%= food.genre %>
     <% end %>
   </div><br>
@@ -92,6 +92,20 @@
       src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_API_KEY"] %>&callback=initMap&libraries=places"
       defer
     ></script>
-    
+
+  
+    <% if logged_in? %>
+      <div class="row">
+        <aside class="col-md-4">
+          <section class="user_info">
+            <%= render 'shared/user_info' %>
+          </section>
+          <section class="micropost_form">
+            <%= render 'shared/micropost_form' %>
+          </section>
+        </aside>
+      </div>
+    <% end %>
   </body>
+  
 </html>

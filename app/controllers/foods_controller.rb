@@ -59,8 +59,12 @@ class FoodsController < ApplicationController
   end
 
   def search 
-    @results = @q.result
+    @food_results = @q.result
     @api_key = ENV['GOOGLE_API_KEY']
+    if logged_in?
+      @micropost  = current_user.microposts.build
+      @feed_items = current_user.feed.paginate(page: params[:page])
+    end
   end
 
   private
