@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_30_013848) do
+ActiveRecord::Schema[7.0].define(version: 2024_06_10_033452) do
+  create_table "bookmarks", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "restaurant_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "place_id"
+    t.string "name"
+    t.string "address"
+    t.index ["restaurant_id"], name: "index_bookmarks_on_restaurant_id"
+    t.index ["user_id", "restaurant_id"], name: "index_bookmarks_on_user_id_and_restaurant_id", unique: true
+    t.index ["user_id"], name: "index_bookmarks_on_user_id"
+  end
+
   create_table "foods", force: :cascade do |t|
     t.string "genre"
     t.string "mood"
@@ -25,6 +38,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_013848) do
     t.datetime "updated_at", null: false
     t.index ["user_id", "created_at"], name: "index_microposts_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_microposts_on_user_id"
+  end
+
+  create_table "restaurants", force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.float "latitude"
+    t.float "longtitude"
+    t.string "place_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -45,5 +68,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_013848) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "bookmarks", "restaurants"
+  add_foreign_key "bookmarks", "users"
   add_foreign_key "microposts", "users"
 end

@@ -31,12 +31,11 @@
     let service;
 
     function initMap() {
-      const Amsterdam = new google.maps.LatLng(52.3676, 4.9041);
+      const London = new google.maps.LatLng(51.509865, -0.118092);
       
       map = new google.maps.Map(document.getElementById("map"), {
-        center: Amsterdam,
+        center: London,
         zoom: 14,
-        mapId: "8d193001f940fde3",
       });
 
       const restaurantQuery = "restaurant";
@@ -48,39 +47,97 @@
       });
 
       const allGenres = genres.join(" ");
-      const query = `restaurant ${allGenres} Amsterdam`;
+      const query = `restaurant ${allGenres} London`;
 
       const request = {
         query: query,
-        fields: ["name", "geometry"],
+        fields: ["place_id", "name", "geometry"]
       };
 
       infowindow = new google.maps.InfoWindow();
       service = new google.maps.places.PlacesService(map);
+
+      // searching places with textSearch
       service.textSearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results) {
             for (let i = 0; i < results.length; i++) {
-                createMarker(results[i]);
+              const place = results[i];
+              createMarker(place);
             }
-
             map.setCenter(results[0].geometry.location);
+          } else {
+            console,error("Google Maps Places API request failed:", status);
           }
       });
     }
 
     function createMarker(place) {
-        if (!place.geometry || !place.geometry.location) return;
+      if (!place.geometry || !place.geometry.location) return;
 
-        const marker = new google.maps.Marker({
-          map,
-          position: place.geometry.location,
-        });
+      const marker = new google.maps.Marker({
+        map,
+        position: place.geometry.location,
+      });
 
-        google.maps.event.addListener(marker, "click", () => {
-          infowindow.setContent(place.name || "");
-          infowindow.open(map);
+      //show the detail information when you click a marker
+      google.maps.event.addListener(marker, "click", () => {
+        service.getDetails({ placeId: place.place_id }, (result, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            const price = result.price_level ? "£".repeat(result.price_level) : "No information";
+
+            // show some photos
+            let photosContent = '';
+            if (result.photos && result.photos.length > 0) {
+              result.photos.forEach(photo => {
+                photosContent += `<p><img style="max-width:200px" src="${photo.getUrl()}"/></p>`;
+              });
+            }
+
+            const content = `
+              <h2>${result.name}</h2>
+              <button onclick="bookmarkPlace(${result.place_id}, ${result.name}, ${result.formatted_address})">Bookmark</button>
+              <p>Ranking: ${result.rating}</p>
+              <p>Opening hours:<br> ${result.opening_hours ? result.opening_hours.weekday_text.join('<br>') : "No information"}</p>
+              <p>Phone number: ${result.formatted_phone_number}</p>
+              <p>Address: ${result.formatted_address}</p>
+              ${photosContent}
+            `;
+
+            infowindow.setContent(content);
+            infowindow.open(map, marker);
+          } else {
+            console.error("getDetails failed:", status);
+          }
         });
+      });
     }
+
+    //bookmark function
+    function bookmarkPlace(place_id, name, address) {
+      const data = { place_id, name, address };
+
+      fetch('/bookmarks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Place bookmarked successfully!');
+        } else {
+          alert('Failed to bookmark place.');
+        }
+      })
+      .catch(error => {
+        console.error('Error bookmarking place:', error);
+        alert('An error occurred while bookmarking the place.');
+      });
+    }
+
+    
 
     window.initMap = initMap;
   </script>
@@ -93,7 +150,8 @@
       defer
     ></script>
 
-  
+
+    
     <% if logged_in? %>
       <div class="row">
         <aside class="col-md-4">
